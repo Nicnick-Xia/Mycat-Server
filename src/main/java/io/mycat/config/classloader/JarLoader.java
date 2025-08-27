@@ -7,8 +7,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.io.*;
 import java.util.*;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 
 public class JarLoader {
+  private static final Logger LOGGER = LoggerFactory.getLogger(JarLoader.class);
 	  /** Unpack a jar file into a directory. */
 	  public static void unJar(File jarFile, File toDir) throws IOException {
 	    JarFile jar = new JarFile(jarFile);
@@ -72,13 +74,13 @@ public class JarLoader {
 		    File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		    tmpDir.mkdirs();
 		    if (!tmpDir.isDirectory()) { 
-		    	System.out.println("Mkdirs failed to create " + tmpDir);
+		    	LOGGER.warn("Mkdirs failed to create {}", tmpDir);
 		    }
 		    final File workDir = File.createTempFile("unjar", "", tmpDir);
 		    workDir.delete();
 		    workDir.mkdirs();
 		    if (!workDir.isDirectory()) {
-		    	System.out.println("Mkdirs failed to create " + workDir);
+		    	LOGGER.warn("Mkdirs failed to create {}", workDir);
 		    }
 
 		    Runtime.getRuntime().addShutdownHook(new Thread() {
