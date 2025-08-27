@@ -22,6 +22,7 @@ import io.mycat.config.loader.zkprocess.entity.schema.datanode.DataNode;
 * 版权所有：Copyright 2016 zjhz, Inc. All Rights Reserved.
 */
 public class JsonProcessBase {
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(JsonProcessBase.class);
 
     /**
      * 进行消息转换的类的信息
@@ -85,12 +86,12 @@ public class JsonProcessBase {
 
         String jsonStr = jsonParse.toJsonFromBean(datanode);
 
-        System.out.println("单对象当前的json:" + jsonStr);
+        LOGGER.info("单对象当前的json:{}", jsonStr);
 
         // 转换实体
         DataNode node = jsonParse.toBeanformJson(jsonStr, DataNode.class);
 
-        System.out.println("单对象:" + node);
+        LOGGER.info("单对象:{}", node);
 
         List<DataNode> listNode = new ArrayList<>();
 
@@ -99,14 +100,14 @@ public class JsonProcessBase {
 
         String listJson = jsonParse.toJsonFromBean(listNode);
 
-        System.out.println("当前集合的json:" + listJson);
+        LOGGER.info("当前集合的json:{}", listJson);
 
         // 转换为集合的bean
         Type parseType = new TypeToken<List<DataNode>>() {
         }.getType();
         List<DataNode> list = jsonParse.toBeanformJson(listJson, parseType);
 
-        System.out.println("集合对象:" + list);
+        LOGGER.info("集合对象:{}", list);
 
         // 复杂对象的转换
         Schemas schema = new Schemas();
@@ -114,12 +115,12 @@ public class JsonProcessBase {
 
         String jsonMultStr = jsonParse.toJsonFromBean(schema);
 
-        System.out.println("复杂单对象当前的json:" + jsonMultStr);
+        LOGGER.info("复杂单对象当前的json:{}", jsonMultStr);
 
         // 转换实体
         Schemas nodeMult = jsonParse.toBeanformJson(jsonMultStr, Schemas.class);
 
-        System.out.println("复杂单对象:" + nodeMult);
+        LOGGER.info("复杂单对象:{}", nodeMult);
 
     }
 }

@@ -1,11 +1,11 @@
 package io.mycat.config.loader.zkprocess.xmltozk;
 
 import com.google.common.io.Files;
-import io.mycat.config.loader.console.ZookeeperPath;
-import io.mycat.config.loader.zkprocess.zktoxml.listen.RuleszkToxmlLoader;
 import io.mycat.config.model.SystemConfig;
 import io.mycat.util.ZKUtils;
 import org.apache.curator.framework.CuratorFramework;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -15,6 +15,7 @@ import java.nio.file.Paths;
  *  only for test
  */
 public class BindataToZK {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BindataToZK.class);
     public static void main(String[] args) {
         File file = new File(SystemConfig.getHomePath()+ "/conf","ruledata" );
         if(file.exists()&&file.isDirectory())
@@ -28,7 +29,7 @@ public class BindataToZK {
                     zk.create().creatingParentsIfNeeded().forPath(path)  ;
                     zk.setData().forPath(path, Files.toByteArray(binFile)) ;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("BindataToZK error creating/updating path", e);
                 }
 
             }

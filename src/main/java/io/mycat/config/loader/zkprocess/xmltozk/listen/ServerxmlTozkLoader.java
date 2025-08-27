@@ -210,7 +210,6 @@ public class ServerxmlTozkLoader extends ZkMultLoader implements NotiflyService 
                     mapFileStr.append(new String(buffers, 0, readIndex));
                 }
             } catch (IOException e) {
-                e.printStackTrace();
                 LOGGER.error("SequenceTozkLoader readMapFile IOException", e);
 
             } finally {
