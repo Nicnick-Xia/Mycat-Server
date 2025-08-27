@@ -35,7 +35,7 @@ import java.util.zip.Inflater;
  * |  22 00 00    |   00     |  32 00 00    | compress("\x2e\x00\x00\x00\x03select ...")    |
  * | -------------------------------------------------------------------------------------- | 	
  * 
- * 	 Q:为什么消息体是 压缩内容 或者未压缩内容?
+ *   Q:为什么消息体是 压缩内容 或者未压缩内容?
  *   A:这是因为mysql内部有一个约定，如果查询语句payload小于50字节时， 对内容不压缩而保持原貌的方式，而mysql此举是为了减少CPU性能开销
  * 
  */
@@ -74,7 +74,6 @@ public class CompressUtil {
 			ConcurrentLinkedQueue<byte[]> compressUnfinishedDataQueue) {
 
 		ByteBuffer byteBuf = con.allocate();
-		byteBuf = con.checkWriteBuffer(byteBuf, data.length, false); //TODO: 数据量大的时候, 此处是是性能的堵点
 		
 		MySQLMessage msg = new MySQLMessage(data);
 		while ( msg.hasRemaining() ) {
@@ -101,15 +100,18 @@ public class CompressUtil {
 				if ( packet.length != 0 ) {
 					
 					if ( packet.length <= NO_COMPRESS_PACKET_LENGTH ) {
+						// 3 + 1 + 3 header + body length
+						byteBuf = con.checkWriteBuffer(byteBuf, 7 + packet.length, false);
 						BufferUtil.writeUB3(byteBuf, packet.length);    //压缩长度
-						byteBuf.put(packet[3]);			 		 		//压缩序号
-						BufferUtil.writeUB3(byteBuf, 0);  				//压缩前的长度设置为0
+						byteBuf.put(packet[3]);				 			//压缩序号
+						BufferUtil.writeUB3(byteBuf, 0);					//压缩前的长度设置为0
 						byteBuf.put(packet);							//包体
-
-					} else {						
+					
+					} else { 						
 						
-						byte[] compress = compress(packet);				//压缩
-						
+						byte[] compress = compress(packet);					//压缩
+						// 3 + 1 + 3 header + body length
+						byteBuf = con.checkWriteBuffer(byteBuf, 7 + compress.length, false);
 						BufferUtil.writeUB3(byteBuf, compress.length);
 						byteBuf.put(packet[3]);
 						BufferUtil.writeUB3(byteBuf, packet.length);
@@ -136,8 +138,8 @@ public class CompressUtil {
 		//包头
 		//-----------------------------------------
 		int packetLength = msg.readUB3();  //压缩的包长
-		byte packetId = msg.read();		   //压缩的包号
-		int oldLen = msg.readUB3();		   //压缩前的长度
+		byte packetId = msg.read();	   //压缩的包号
+		int oldLen = msg.readUB3();	   //压缩前的长度
 		
 		//未压缩, 直接返回
 		if ( packetLength == data.length - 4 ) {
@@ -250,7 +252,7 @@ public class CompressUtil {
 		compresser.finish();
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
-		byte[] result = new byte[1024];		
+		byte[] result = new byte[1024];
 		try {			
 			while (!compresser.finished()) {
 				int length = compresser.deflate(result);
@@ -260,48 +262,46 @@ public class CompressUtil {
 		} finally {
 			try {
 				out.close();
-			} catch (Exception e) {
+			} catch (IOException e) {
 			}
-			compresser.end();
 		}
-		
 		return output;
 	}
 
 	/**
-	 * 适用于mysql与客户端交互时zlib解压
-	 *
-	 * @param data  数据
-	 * @param off   偏移量
-	 * @param len   长度
-	 * @return
+	 * 一般的压缩算法
 	 */
-	public static byte[] decompress(byte[] data, int off, int len) {
-		
-		byte[] output = null;
-		
-		Inflater decompresser = new Inflater();
-		decompresser.reset();
-		decompresser.setInput(data, off, len);
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
-		try {
-			byte[] result = new byte[1024];
-			while (!decompresser.finished()) {
-				int i = decompresser.inflate(result);
-				out.write(result, 0, i);
-			}
-			output = out.toByteArray();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				out.close();				
-			} catch (Exception e) {
-			}			
-			decompresser.end();
-		}
-		return output;
+	public static byte[] compressCommon(byte[] data) {
+		Deflater compresser = new Deflater();
+		compresser.setInput(data);
+		compresser.finish();
+		byte[] output = new byte[data.length];
+		int compressedDataLength = compresser.deflate(output);
+		byte[] output2 = new byte[compressedDataLength];
+		System.arraycopy(output, 0, output2, 0, compressedDataLength);
+		return output2;
 	}
 
+	/**
+	 * 解压缩数据
+	 */
+	public static byte[] decompress(byte[] inputByte, int offset, int length) {
+		int cache = 4096;
+		byte[] outputByte = new byte[cache];
+		Inflater inflater = new Inflater();
+		inflater.reset();
+		inflater.setInput(inputByte, offset, length);
+		ByteArrayOutputStream o = new ByteArrayOutputStream(inputByte.length);
+		try {
+			while (!inflater.finished()) {
+				int i = inflater.inflate(outputByte);
+				o.write(outputByte, 0, i);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			inflater.end();
+		}
+		return o.toByteArray();
+	}
 }

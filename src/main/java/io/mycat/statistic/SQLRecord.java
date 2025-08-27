@@ -23,6 +23,8 @@
  */
 package io.mycat.statistic;
 
+import java.util.Objects;
+
 /**
  * @author mycat
  */
@@ -37,24 +39,33 @@ public final class SQLRecord implements Comparable<SQLRecord> {
     public int dataNodeIndex;
 
     @Override
-    public int compareTo(SQLRecord o) {
-        //执行时间从大到小
-        long para =  o.executeTime - executeTime;
-        //开始时间从大到小
-        return (int) (para == 0 ? (o.startTime - startTime) : para );
+    public int compareTo(SQLRecord other) {
+        if (other == null) {
+            return -1;
+        }
+        int cmp = Long.compare(other.executeTime, this.executeTime); // desc
+        if (cmp != 0) {
+            return cmp;
+        }
+        return Long.compare(other.startTime, this.startTime); // desc
     }
 
     @Override
-    public boolean equals(Object arg0) {
-        return super.equals(arg0);
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        SQLRecord that = (SQLRecord) obj;
+        return startTime == that.startTime &&
+                executeTime == that.executeTime &&
+                dataNodeIndex == that.dataNodeIndex &&
+                Objects.equals(host, that.host) &&
+                Objects.equals(schema, that.schema) &&
+                Objects.equals(statement, that.statement) &&
+                Objects.equals(dataNode, that.dataNode);
     }
 
     @Override
     public int hashCode() {
-        // TODO Auto-generated method stub
-        return super.hashCode();
+        return Objects.hash(host, schema, statement, startTime, executeTime, dataNode, dataNodeIndex);
     }
-    
-    
-
 }

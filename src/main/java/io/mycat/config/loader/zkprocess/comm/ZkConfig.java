@@ -129,7 +129,7 @@ public class ZkConfig {
 
     public static void main(String[] args) {
         String zk = ZkConfig.getInstance().getValue(ZkParamCfg.ZK_CFG_CLUSTERID);
-        System.out.println(zk);
+        LOGGER.info(zk);
     }
 
 }

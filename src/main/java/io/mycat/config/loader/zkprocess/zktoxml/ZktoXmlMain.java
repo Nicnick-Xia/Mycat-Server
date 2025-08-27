@@ -50,7 +50,6 @@ public class ZktoXmlMain {
 
     public static void main(String[] args) throws Exception {
         loadZktoFile();
-        System.out.println(Long.MAX_VALUE);
     }
 
     /**
