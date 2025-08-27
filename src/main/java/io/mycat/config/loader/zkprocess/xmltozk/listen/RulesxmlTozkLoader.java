@@ -189,7 +189,6 @@ public class RulesxmlTozkLoader extends ZkMultLoader implements NotiflyService {
                 mapFileStr.append(new String(buffers, 0, readIndex));
             }
         } catch (IOException e) {
-            e.printStackTrace();
             LOGGER.error("RulesxmlTozkLoader readMapFile IOException", e);
 
         } finally {

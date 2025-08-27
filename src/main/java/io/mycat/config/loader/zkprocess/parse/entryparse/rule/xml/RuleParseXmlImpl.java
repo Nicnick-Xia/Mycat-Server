@@ -57,10 +57,8 @@ public class RuleParseXmlImpl implements ParseXmlServiceInf<Rules> {
         try {
             schema = (Rules) this.parseBean.baseParseXmlToBean(path);
         } catch (JAXBException e) {
-            e.printStackTrace();
             lOG.error("RulesParseXmlImpl parseXmlToBean JAXBException", e);
         } catch (XMLStreamException e) {
-            e.printStackTrace();
             lOG.error("RulesParseXmlImpl parseXmlToBean XMLStreamException", e);
         }
 
@@ -72,7 +70,6 @@ public class RuleParseXmlImpl implements ParseXmlServiceInf<Rules> {
         try {
             this.parseBean.baseParseAndWriteToXml(data, outputFile, dataName);
         } catch (IOException e) {
-            e.printStackTrace();
             lOG.error("RulesParseXmlImpl parseToXmlWrite IOException", e);
         }
     }

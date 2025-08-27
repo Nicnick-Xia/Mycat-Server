@@ -165,11 +165,11 @@ public class DynaClassLoader {
 		private DynaClass searchFile(String classpath, String fileName) throws Exception {
 			DynaClass dynCls = null;
 			String path = fileName.replace('.', File.separatorChar) + ".class";
-			System.out.println("class " + classpath + " file " + path);
+			LOGGER.debug("class {} file {}", classpath, path);
 			File f = new File(classpath, path);
 			if (f.isFile()) {
 				String theName = f.getPath();
-				System.out.println("found " + theName);
+				LOGGER.debug("found {}", theName);
 
 				dynCls = new DynaClass(f.getPath());
 				dynCls.lastModified = f.lastModified();
@@ -178,7 +178,7 @@ public class DynaClassLoader {
 			else {
 				path = fileName.replace('.', File.separatorChar) + ".jar";
 				//classpath="D:\\code\\mycat\\Mycat-Server\\catlet\\";
-				System.out.println("jar " + classpath + " file " + path);
+				LOGGER.debug("jar {} file {}", classpath, path);
 				f = new File(classpath, path);
 				if (f.isFile()) {
 				  try {

@@ -57,10 +57,8 @@ public class ServerParseXmlImpl implements ParseXmlServiceInf<Server> {
         try {
             server = (Server) this.parseBean.baseParseXmlToBean(path);
         } catch (JAXBException e) {
-            e.printStackTrace();
             lOG.error("ServerParseXmlImpl parseXmlToBean JAXBException", e);
         } catch (XMLStreamException e) {
-            e.printStackTrace();
             lOG.error("ServerParseXmlImpl parseXmlToBean XMLStreamException", e);
         }
 
@@ -72,7 +70,6 @@ public class ServerParseXmlImpl implements ParseXmlServiceInf<Server> {
         try {
             this.parseBean.baseParseAndWriteToXml(data, outputFile, dataName);
         } catch (IOException e) {
-            e.printStackTrace();
             lOG.error("ServerParseXmlImpl parseToXmlWrite IOException", e);
         }
     }

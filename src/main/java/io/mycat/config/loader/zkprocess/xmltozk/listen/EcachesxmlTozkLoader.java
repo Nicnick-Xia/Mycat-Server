@@ -153,7 +153,6 @@ public class EcachesxmlTozkLoader extends ZkMultLoader implements NotiflyService
                 mapFileStr.append(new String(buffers, 0, readIndex));
             }
         } catch (IOException e) {
-            e.printStackTrace();
             LOGGER.error("EhcachexmlTozkLoader readMapFile IOException", e);
         } finally {
             IOUtils.close(input);

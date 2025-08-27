@@ -57,10 +57,8 @@ public class SchemasParseXmlImpl implements ParseXmlServiceInf<Schemas> {
         try {
             schema = (Schemas) this.parseBean.baseParseXmlToBean(path);
         } catch (JAXBException e) {
-            e.printStackTrace();
             lOG.error("SchemasParseXmlImpl parseXmlToBean JAXBException", e);
         } catch (XMLStreamException e) {
-            e.printStackTrace();
             lOG.error("SchemasParseXmlImpl parseXmlToBean XMLStreamException", e);
         }
 
@@ -72,7 +70,6 @@ public class SchemasParseXmlImpl implements ParseXmlServiceInf<Schemas> {
         try {
             this.parseBean.baseParseAndWriteToXml(data, outputFile, dataName);
         } catch (IOException e) {
-            e.printStackTrace();
             lOG.error("SchemasParseXmlImpl parseToXmlWrite IOException", e);
         }
     }

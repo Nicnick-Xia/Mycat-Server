@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 public class StreamGobble extends Thread {
     InputStream is;
     String type;
-   private StringBuffer result=new StringBuffer();
+   private StringBuilder result=new StringBuilder();
 
     public String getResult() {
         return result.toString();

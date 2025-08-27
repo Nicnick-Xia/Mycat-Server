@@ -254,7 +254,7 @@ public class RuleszkToxmlLoader extends ZkMultLoader implements NotiflyService {
         try {
             Files.write(value.getBytes(), new File(path));
         } catch (IOException e1) {
-            e1.printStackTrace();
+            LOGGER.error("RuleszkToxmlLoader write file IOException", e1);
         }
 
     }
